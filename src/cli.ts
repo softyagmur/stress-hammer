@@ -30,7 +30,7 @@ class StressHammerCLI {
     this.program
       .name("stress-hammer")
       .description("A powerful stress testing tool for APIs and web services")
-      .version("1.0.0-beta.2");
+      .version("1.1.0");
 
     this.setupTestCommand();
     this.setupPresetCommand();
@@ -51,7 +51,11 @@ class StressHammerCLI {
         "HTTP method (GET, POST, PUT, DELETE, PATCH)",
         "GET"
       )
-      .option("-c, --concurrency <number>", "Number of concurrent requests", "10")
+      .option(
+        "-c, --concurrency <number>",
+        "Number of concurrent requests",
+        "10"
+      )
       .option("-n, --requests <number>", "Total number of requests", "100")
       .option(
         "-d, --duration <seconds>",
@@ -116,7 +120,10 @@ class StressHammerCLI {
     this.program
       .command("config")
       .description("Run stress test from a configuration file")
-      .requiredOption("-f, --file <file>", "Configuration file path (JSON format)")
+      .requiredOption(
+        "-f, --file <file>",
+        "Configuration file path (JSON format)"
+      )
       .option("-v, --verbose", "Enable verbose logging")
       .option("-o, --output <file>", "Output file for results (JSON format)")
       .option("--csv <file>", "Export results to CSV file")
@@ -137,7 +144,11 @@ class StressHammerCLI {
     this.program
       .command("generate-config")
       .description("Generate a sample configuration file")
-      .option("-o, --output <file>", "Output file path", "stress-test-config.json")
+      .option(
+        "-o, --output <file>",
+        "Output file path",
+        "stress-test-config.json"
+      )
       .action((options) => {
         try {
           this.generateSampleConfig(options.output);
@@ -166,7 +177,9 @@ class StressHammerCLI {
 
     if (!preset) {
       throw new Error(
-        `Unknown preset: ${options.preset}. Available presets: ${Object.keys(presetMap).join(", ")}`
+        `Unknown preset: ${options.preset}. Available presets: ${Object.keys(
+          presetMap
+        ).join(", ")}`
       );
     }
 
@@ -182,7 +195,7 @@ class StressHammerCLI {
    */
   private async runConfigTest(options: any): Promise<void> {
     const configPath = path.resolve(options.file);
-    
+
     if (!fs.existsSync(configPath)) {
       throw new Error(`Configuration file not found: ${configPath}`);
     }
@@ -210,7 +223,10 @@ class StressHammerCLI {
     const config: StressTestConfig = {
       url: options.url,
       method: this.validateHttpMethod(options.method.toUpperCase()),
-      concurrency: this.parsePositiveInteger(options.concurrency, "concurrency"),
+      concurrency: this.parsePositiveInteger(
+        options.concurrency,
+        "concurrency"
+      ),
       totalRequests: this.parsePositiveInteger(options.requests, "requests"),
       pattern: this.validateAttackPattern(options.pattern),
       timeout: this.parsePositiveInteger(options.timeout, "timeout"),
@@ -218,7 +234,8 @@ class StressHammerCLI {
     };
 
     if (options.duration) {
-      config.duration = this.parsePositiveInteger(options.duration, "duration") * 1000;
+      config.duration =
+        this.parsePositiveInteger(options.duration, "duration") * 1000;
     }
 
     if (options.delay && parseInt(options.delay) > 0) {
@@ -361,7 +378,7 @@ class StressHammerCLI {
       pattern: "sustained",
       timeout: 30000,
       headers: {
-        "User-Agent": "StressHammer/1.0.0-beta.2",
+        "User-Agent": "StressHammer/1.1.0",
         Accept: "application/json",
       },
       rampUp: {
@@ -374,9 +391,13 @@ class StressHammerCLI {
 
     try {
       fs.writeFileSync(outputPath, JSON.stringify(sampleConfig, null, 2));
-      console.log(chalk.green(`📋 Sample configuration generated: ${outputPath}`));
       console.log(
-        chalk.gray(`Edit the configuration file and run: stress-hammer config -f ${outputPath}`)
+        chalk.green(`📋 Sample configuration generated: ${outputPath}`)
+      );
+      console.log(
+        chalk.gray(
+          `Edit the configuration file and run: stress-hammer config -f ${outputPath}`
+        )
       );
     } catch (error) {
       throw new Error(`Failed to write configuration file: ${error}`);
@@ -415,14 +436,18 @@ class StressHammerCLI {
     for (const headerString of headerStrings) {
       const colonIndex = headerString.indexOf(":");
       if (colonIndex === -1) {
-        throw new Error(`Invalid header format: ${headerString}. Use "Key: Value" format.`);
+        throw new Error(
+          `Invalid header format: ${headerString}. Use "Key: Value" format.`
+        );
       }
 
       const key = headerString.substring(0, colonIndex).trim();
       const value = headerString.substring(colonIndex + 1).trim();
 
       if (!key || !value) {
-        throw new Error(`Invalid header format: ${headerString}. Both key and value are required.`);
+        throw new Error(
+          `Invalid header format: ${headerString}. Both key and value are required.`
+        );
       }
 
       headers[key] = value;
@@ -473,10 +498,16 @@ class StressHammerCLI {
   /**
    * Validates HTTP method
    */
-  private validateHttpMethod(method: string): "GET" | "POST" | "PUT" | "DELETE" | "PATCH" {
+  private validateHttpMethod(
+    method: string
+  ): "GET" | "POST" | "PUT" | "DELETE" | "PATCH" {
     const validMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
     if (!validMethods.includes(method)) {
-      throw new Error(`Invalid HTTP method: ${method}. Valid methods: ${validMethods.join(", ")}`);
+      throw new Error(
+        `Invalid HTTP method: ${method}. Valid methods: ${validMethods.join(
+          ", "
+        )}`
+      );
     }
     return method as any;
   }
@@ -485,9 +516,19 @@ class StressHammerCLI {
    * Validates attack pattern
    */
   private validateAttackPattern(pattern: string): AttackPattern {
-    const validPatterns: AttackPattern[] = ["burst", "sustained", "ramp-up", "wave", "spike"];
+    const validPatterns: AttackPattern[] = [
+      "burst",
+      "sustained",
+      "ramp-up",
+      "wave",
+      "spike",
+    ];
     if (!validPatterns.includes(pattern as AttackPattern)) {
-      throw new Error(`Invalid attack pattern: ${pattern}. Valid patterns: ${validPatterns.join(", ")}`);
+      throw new Error(
+        `Invalid attack pattern: ${pattern}. Valid patterns: ${validPatterns.join(
+          ", "
+        )}`
+      );
     }
     return pattern as AttackPattern;
   }
@@ -505,7 +546,9 @@ class StressHammerCLI {
     }
 
     if (typeof config.totalRequests !== "number" || config.totalRequests <= 0) {
-      throw new Error("Configuration 'totalRequests' must be a positive number");
+      throw new Error(
+        "Configuration 'totalRequests' must be a positive number"
+      );
     }
   }
 
@@ -533,11 +576,11 @@ class StressHammerCLI {
   private handleError(error: unknown): void {
     const message = error instanceof Error ? error.message : String(error);
     console.error(chalk.red("Error:"), message);
-    
+
     if (process.env.NODE_ENV === "development" && error instanceof Error) {
       console.error(error.stack);
     }
-    
+
     process.exit(1);
   }
 

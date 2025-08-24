@@ -25,7 +25,7 @@ export class HttpClient {
       timeout: this.config.timeout || 30000,
       maxRedirects: this.options.maxRedirects || 5,
       headers: {
-        "User-Agent": this.options.userAgent || "StressHammer/1.0.0-beta.2",
+        "User-Agent": this.options.userAgent || "StressHammer/1.1.0",
         ...this.config.headers,
       },
       validateStatus: () => true, // Accept all status codes for analysis
@@ -74,7 +74,9 @@ export class HttpClient {
         data: this.config.body,
       };
 
-      const response: AxiosResponse = await this.axiosInstance.request(requestConfig);
+      const response: AxiosResponse = await this.axiosInstance.request(
+        requestConfig
+      );
 
       return {
         index,
@@ -147,9 +149,10 @@ export class HttpClient {
   private calculateResponseSize(response: AxiosResponse): number {
     try {
       const headers = JSON.stringify(response.headers);
-      const data = typeof response.data === "string" 
-        ? response.data 
-        : JSON.stringify(response.data);
+      const data =
+        typeof response.data === "string"
+          ? response.data
+          : JSON.stringify(response.data);
 
       return Buffer.byteLength(headers + data, "utf8");
     } catch {
@@ -170,7 +173,7 @@ export class HttpClient {
         ECONNRESET: "Connection reset",
         ECONNABORTED: "Connection aborted",
       };
-      
+
       const message = codeMessages[error.code] || error.message;
       return `${error.code}: ${message}`;
     }

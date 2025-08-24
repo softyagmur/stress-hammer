@@ -44,11 +44,11 @@ export interface RampUpConfig {
  * Available attack patterns for stress testing
  */
 export type AttackPattern =
-  | "burst"      // All requests sent simultaneously
-  | "sustained"  // Steady load over time
-  | "ramp-up"    // Gradually increasing load
-  | "wave"       // Multiple waves of requests
-  | "spike";     // Normal load followed by sudden spike
+  | "burst" // All requests sent simultaneously
+  | "sustained" // Steady load over time
+  | "ramp-up" // Gradually increasing load
+  | "wave" // Multiple waves of requests
+  | "spike"; // Normal load followed by sudden spike
 
 /**
  * Result of a single HTTP request

@@ -5,8 +5,10 @@ import { StressTestResult, TestStats } from "./types";
  * Provides multiple output formats and detailed performance analysis
  */
 export class Reporter {
-  private static readonly SECTION_SEPARATOR = "═══════════════════════════════════════════════════════════════";
-  private static readonly SUBSECTION_SEPARATOR = "─────────────────────────────────────────────────────────────";
+  private static readonly SECTION_SEPARATOR =
+    "═══════════════════════════════════════════════════════════════";
+  private static readonly SUBSECTION_SEPARATOR =
+    "─────────────────────────────────────────────────────────────";
 
   /**
    * Generates a comprehensive human-readable report
@@ -31,10 +33,7 @@ export class Reporter {
       sections.push(this.createErrorSection(stats));
     }
 
-    sections.push(
-      this.createAssessmentSection(stats),
-      this.createFooter()
-    );
+    sections.push(this.createAssessmentSection(stats), this.createFooter());
 
     return sections.join("\n");
   }
@@ -125,7 +124,9 @@ export class Reporter {
     ];
 
     if (config.headers && Object.keys(config.headers).length > 0) {
-      lines.push(`Custom Headers:       ${Object.keys(config.headers).length} header(s)`);
+      lines.push(
+        `Custom Headers:       ${Object.keys(config.headers).length} header(s)`
+      );
     }
 
     if (config.delay) {
@@ -138,7 +139,11 @@ export class Reporter {
   /**
    * Creates the execution timing section
    */
-  private static createExecutionSection(startTime: number, endTime: number, duration: number): string {
+  private static createExecutionSection(
+    startTime: number,
+    endTime: number,
+    duration: number
+  ): string {
     return [
       "⏱️  TEST EXECUTION",
       this.SUBSECTION_SEPARATOR,
@@ -154,13 +159,17 @@ export class Reporter {
    */
   private static createPerformanceSection(stats: TestStats): string {
     const failureRate = 100 - stats.successRate;
-    
+
     return [
       "📈 PERFORMANCE METRICS",
       this.SUBSECTION_SEPARATOR,
       `Requests Sent:        ${stats.totalRequests.toLocaleString()}`,
-      `Successful Requests:  ${stats.successfulRequests.toLocaleString()} (${stats.successRate.toFixed(2)}%)`,
-      `Failed Requests:      ${stats.failedRequests.toLocaleString()} (${failureRate.toFixed(2)}%)`,
+      `Successful Requests:  ${stats.successfulRequests.toLocaleString()} (${stats.successRate.toFixed(
+        2
+      )}%)`,
+      `Failed Requests:      ${stats.failedRequests.toLocaleString()} (${failureRate.toFixed(
+        2
+      )}%)`,
       `Requests per Second:  ${stats.requestsPerSecond.toFixed(2)} req/s`,
       `Data Transferred:     ${this.formatBytes(stats.totalDataTransferred)}`,
       "",
@@ -188,18 +197,18 @@ export class Reporter {
    * Creates the status code distribution section
    */
   private static createStatusCodeSection(stats: TestStats): string {
-    const lines = [
-      "📊 STATUS CODE DISTRIBUTION",
-      this.SUBSECTION_SEPARATOR,
-    ];
+    const lines = ["📊 STATUS CODE DISTRIBUTION", this.SUBSECTION_SEPARATOR];
 
-    const sortedCodes = Object.entries(stats.statusCodeDistribution)
-      .sort(([a], [b]) => parseInt(a) - parseInt(b));
+    const sortedCodes = Object.entries(stats.statusCodeDistribution).sort(
+      ([a], [b]) => parseInt(a) - parseInt(b)
+    );
 
     for (const [code, count] of sortedCodes) {
       const percentage = ((count / stats.totalRequests) * 100).toFixed(2);
       const statusText = this.getStatusText(parseInt(code));
-      lines.push(`${code} ${statusText}: ${count.toLocaleString()} (${percentage}%)`);
+      lines.push(
+        `${code} ${statusText}: ${count.toLocaleString()} (${percentage}%)`
+      );
     }
 
     return lines.join("\n") + "\n";
@@ -209,13 +218,11 @@ export class Reporter {
    * Creates the error distribution section
    */
   private static createErrorSection(stats: TestStats): string {
-    const lines = [
-      "❌ ERROR DISTRIBUTION",
-      this.SUBSECTION_SEPARATOR,
-    ];
+    const lines = ["❌ ERROR DISTRIBUTION", this.SUBSECTION_SEPARATOR];
 
-    const sortedErrors = Object.entries(stats.errorDistribution)
-      .sort(([, a], [, b]) => b - a);
+    const sortedErrors = Object.entries(stats.errorDistribution).sort(
+      ([, a], [, b]) => b - a
+    );
 
     for (const [error, count] of sortedErrors) {
       const percentage = ((count / stats.totalRequests) * 100).toFixed(2);
@@ -230,7 +237,7 @@ export class Reporter {
    */
   private static createAssessmentSection(stats: TestStats): string {
     const assessment = this.generatePerformanceAssessment(stats);
-    
+
     return [
       "🎯 PERFORMANCE ASSESSMENT",
       this.SUBSECTION_SEPARATOR,
@@ -289,12 +296,12 @@ export class Reporter {
       201: "Created",
       202: "Accepted",
       204: "No Content",
-      
+
       // 3xx Redirection
       301: "Moved Permanently",
       302: "Found",
       304: "Not Modified",
-      
+
       // 4xx Client Error
       400: "Bad Request",
       401: "Unauthorized",
@@ -303,7 +310,7 @@ export class Reporter {
       405: "Method Not Allowed",
       408: "Request Timeout",
       429: "Too Many Requests",
-      
+
       // 5xx Server Error
       500: "Internal Server Error",
       502: "Bad Gateway",

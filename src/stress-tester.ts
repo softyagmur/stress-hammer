@@ -31,7 +31,9 @@ export class StressTester {
    * Executes the stress test according to the configured pattern
    */
   async run(): Promise<StressTestResult> {
-    this.logInfo(`Starting stress test with ${this.config.totalRequests} requests`);
+    this.logInfo(
+      `Starting stress test with ${this.config.totalRequests} requests`
+    );
     this.logInfo(`Target: ${this.config.url}`);
     this.logInfo(`Concurrency: ${this.config.concurrency}`);
     this.logInfo(`Pattern: ${this.config.pattern || "sustained"}`);
@@ -61,7 +63,7 @@ export class StressTester {
    */
   private async executePattern(): Promise<void> {
     const pattern = this.config.pattern || "sustained";
-    
+
     switch (pattern) {
       case "burst":
         await this.executeBurstPattern();
@@ -105,7 +107,10 @@ export class StressTester {
    * Executes sustained pattern with controlled batching
    */
   private async executeSustainedPattern(): Promise<void> {
-    const batchSize = Math.min(this.config.concurrency, this.config.totalRequests);
+    const batchSize = Math.min(
+      this.config.concurrency,
+      this.config.totalRequests
+    );
     const batches = Math.ceil(this.config.totalRequests / batchSize);
 
     for (let batch = 0; batch < batches; batch++) {
@@ -135,7 +140,9 @@ export class StressTester {
    * Executes burst pattern - all requests sent simultaneously
    */
   private async executeBurstPattern(): Promise<void> {
-    this.logInfo("Executing burst pattern - sending all requests simultaneously");
+    this.logInfo(
+      "Executing burst pattern - sending all requests simultaneously"
+    );
 
     const results = await this.httpClient.makeConcurrentRequests(
       0,
@@ -165,7 +172,8 @@ export class StressTester {
 
     this.validateRampUpConfig(rampUpConfig);
 
-    const stepDuration = rampUpTime / Math.ceil((endConcurrency - startConcurrency) / step);
+    const stepDuration =
+      rampUpTime / Math.ceil((endConcurrency - startConcurrency) / step);
     let currentConcurrency = startConcurrency;
     let requestIndex = 0;
 
@@ -193,7 +201,10 @@ export class StressTester {
       this.reportProgress();
 
       if (currentConcurrency < endConcurrency) {
-        currentConcurrency = Math.min(currentConcurrency + step, endConcurrency);
+        currentConcurrency = Math.min(
+          currentConcurrency + step,
+          endConcurrency
+        );
         await this.sleep(stepDuration);
       }
     }
@@ -211,9 +222,10 @@ export class StressTester {
 
     for (let wave = 0; wave < waveCount; wave++) {
       const startIndex = wave * requestsPerWave;
-      const requestsInWave = wave === waveCount - 1
-        ? this.config.totalRequests - startIndex
-        : requestsPerWave;
+      const requestsInWave =
+        wave === waveCount - 1
+          ? this.config.totalRequests - startIndex
+          : requestsPerWave;
 
       this.logInfo(`Starting wave ${wave + 1}/${waveCount}`);
 
@@ -288,15 +300,17 @@ export class StressTester {
     );
 
     const duration = this.endTime - this.startTime;
-    const requestsPerSecond = duration > 0 ? (this.results.length / duration) * 1000 : 0;
+    const requestsPerSecond =
+      duration > 0 ? (this.results.length / duration) * 1000 : 0;
 
     return {
       totalRequests: this.results.length,
       successfulRequests: successfulRequests.length,
       failedRequests: failedRequests.length,
-      successRate: this.results.length > 0 
-        ? (successfulRequests.length / this.results.length) * 100 
-        : 0,
+      successRate:
+        this.results.length > 0
+          ? (successfulRequests.length / this.results.length) * 100
+          : 0,
       avgResponseTime: this.calculateAverage(responseTimes),
       minResponseTime: responseTimes[0] || 0,
       maxResponseTime: responseTimes[responseTimes.length - 1] || 0,
@@ -313,7 +327,10 @@ export class StressTester {
   /**
    * Calculates the specified percentile from sorted response times
    */
-  private calculatePercentile(sortedArray: number[], percentile: number): number {
+  private calculatePercentile(
+    sortedArray: number[],
+    percentile: number
+  ): number {
     if (sortedArray.length === 0) return 0;
 
     const index = Math.ceil((percentile / 100) * sortedArray.length) - 1;
@@ -324,17 +341,19 @@ export class StressTester {
    * Calculates average from an array of numbers
    */
   private calculateAverage(numbers: number[]): number {
-    return numbers.length > 0 
-      ? numbers.reduce((sum, num) => sum + num, 0) / numbers.length 
+    return numbers.length > 0
+      ? numbers.reduce((sum, num) => sum + num, 0) / numbers.length
       : 0;
   }
 
   /**
    * Calculates error distribution from failed requests
    */
-  private calculateErrorDistribution(failedRequests: RequestResult[]): Record<string, number> {
+  private calculateErrorDistribution(
+    failedRequests: RequestResult[]
+  ): Record<string, number> {
     const distribution: Record<string, number> = {};
-    
+
     failedRequests.forEach((r) => {
       const error = r.error || "Unknown error";
       distribution[error] = (distribution[error] || 0) + 1;
@@ -348,7 +367,7 @@ export class StressTester {
    */
   private calculateStatusCodeDistribution(): Record<number, number> {
     const distribution: Record<number, number> = {};
-    
+
     this.results.forEach((r) => {
       if (r.statusCode) {
         distribution[r.statusCode] = (distribution[r.statusCode] || 0) + 1;
@@ -369,13 +388,16 @@ export class StressTester {
     const percentage = total > 0 ? (completed / total) * 100 : 0;
 
     const recentResults = this.results.slice(-100);
-    const currentRps = recentResults.length > 0 && this.startTime > 0
-      ? recentResults.length / ((Date.now() - this.startTime) / 1000)
-      : 0;
+    const currentRps =
+      recentResults.length > 0 && this.startTime > 0
+        ? recentResults.length / ((Date.now() - this.startTime) / 1000)
+        : 0;
 
-    const avgResponseTime = recentResults.length > 0
-      ? recentResults.reduce((sum, r) => sum + r.responseTime, 0) / recentResults.length
-      : 0;
+    const avgResponseTime =
+      recentResults.length > 0
+        ? recentResults.reduce((sum, r) => sum + r.responseTime, 0) /
+          recentResults.length
+        : 0;
 
     const errors = this.results.filter(
       (r) => r.error || (r.statusCode && r.statusCode >= 400)
@@ -415,7 +437,9 @@ export class StressTester {
   /**
    * Validates ramp-up configuration
    */
-  private validateRampUpConfig(rampUp: NonNullable<StressTestConfig['rampUp']>): void {
+  private validateRampUpConfig(
+    rampUp: NonNullable<StressTestConfig["rampUp"]>
+  ): void {
     if (rampUp.startConcurrency <= 0 || rampUp.endConcurrency <= 0) {
       throw new Error("Ramp-up concurrency values must be greater than 0");
     }
@@ -446,7 +470,10 @@ export class StressTester {
   /**
    * Centralized logging with level filtering
    */
-  private log(level: "debug" | "info" | "warn" | "error", message: string): void {
+  private log(
+    level: "debug" | "info" | "warn" | "error",
+    message: string
+  ): void {
     if (!this.options.verbose && level === "debug") return;
 
     const logLevel = this.options.logLevel || "info";

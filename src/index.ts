@@ -1,5 +1,9 @@
 import { StressTester } from "./stress-tester";
-import { StressTestConfig, StressTestOptions, AttackPresetConfig } from "./types";
+import {
+  StressTestConfig,
+  StressTestOptions,
+  AttackPresetConfig,
+} from "./types";
 
 // Re-export all core components for external use
 export { StressTester } from "./stress-tester";
@@ -9,11 +13,11 @@ export * from "./types";
 
 /**
  * Convenience function for quick stress testing with minimal configuration
- * 
+ *
  * @param url - Target URL to test
  * @param options - Test configuration options
  * @returns Promise resolving to test results
- * 
+ *
  * @example
  * ```typescript
  * const result = await stressTest('https://api.example.com', {
@@ -177,7 +181,7 @@ export const AttackPresets = {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      "User-Agent": "StressHammer/1.0.0-beta.2",
+      "User-Agent": "StressHammer/1.1.0",
     },
   }),
 
@@ -266,8 +270,10 @@ export const StressTestUtils = {
 
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i];
-      console.log(`\n🚀 Starting test ${i + 1}/${configs.length}: ${config.url}`);
-      
+      console.log(
+        `\n🚀 Starting test ${i + 1}/${configs.length}: ${config.url}`
+      );
+
       const tester = new StressTester(config, testOptions);
       const result = await tester.run();
       results.push(result);
@@ -290,7 +296,7 @@ export const StressTestUtils = {
     options: StressTestOptions = {}
   ) => {
     console.log(`🚀 Starting ${configs.length} parallel tests...`);
-    
+
     const testPromises = configs.map((config, index) => {
       console.log(`Starting parallel test ${index + 1}: ${config.url}`);
       const tester = new StressTester(config, options);
@@ -314,32 +320,51 @@ export const StressTestUtils = {
     results.forEach((result, index) => {
       const config = result.config;
       const stats = result.stats;
-      
+
       sections.push(`📊 Test ${index + 1}: ${config.url}`);
-      sections.push(`   Method: ${config.method || 'GET'} | Pattern: ${config.pattern || 'sustained'}`);
+      sections.push(
+        `   Method: ${config.method || "GET"} | Pattern: ${
+          config.pattern || "sustained"
+        }`
+      );
       sections.push(`   Success Rate: ${stats.successRate.toFixed(2)}%`);
       sections.push(`   Avg Response: ${stats.avgResponseTime.toFixed(2)}ms`);
       sections.push(`   Requests/sec: ${stats.requestsPerSecond.toFixed(2)}`);
       sections.push(`   P95 Response: ${stats.p95ResponseTime.toFixed(2)}ms`);
-      sections.push(`   Total Requests: ${stats.totalRequests.toLocaleString()}`);
+      sections.push(
+        `   Total Requests: ${stats.totalRequests.toLocaleString()}`
+      );
       sections.push("");
     });
 
     // Add summary statistics
     if (results.length > 1) {
-      const avgSuccessRate = results.reduce((sum, r) => sum + r.stats.successRate, 0) / results.length;
-      const avgResponseTime = results.reduce((sum, r) => sum + r.stats.avgResponseTime, 0) / results.length;
-      const totalRequests = results.reduce((sum, r) => sum + r.stats.totalRequests, 0);
+      const avgSuccessRate =
+        results.reduce((sum, r) => sum + r.stats.successRate, 0) /
+        results.length;
+      const avgResponseTime =
+        results.reduce((sum, r) => sum + r.stats.avgResponseTime, 0) /
+        results.length;
+      const totalRequests = results.reduce(
+        (sum, r) => sum + r.stats.totalRequests,
+        0
+      );
 
       sections.push("📈 SUMMARY STATISTICS");
-      sections.push("─────────────────────────────────────────────────────────────");
+      sections.push(
+        "─────────────────────────────────────────────────────────────"
+      );
       sections.push(`Average Success Rate: ${avgSuccessRate.toFixed(2)}%`);
       sections.push(`Average Response Time: ${avgResponseTime.toFixed(2)}ms`);
-      sections.push(`Total Requests Across All Tests: ${totalRequests.toLocaleString()}`);
+      sections.push(
+        `Total Requests Across All Tests: ${totalRequests.toLocaleString()}`
+      );
       sections.push("");
     }
 
-    sections.push("═══════════════════════════════════════════════════════════════");
+    sections.push(
+      "═══════════════════════════════════════════════════════════════"
+    );
 
     return sections.join("\n");
   },
@@ -387,13 +412,13 @@ export const StressTestUtils = {
     endpoints: string[],
     baseConfig: Partial<StressTestConfig> = {}
   ): StressTestConfig[] => {
-    return endpoints.map(endpoint => ({
+    return endpoints.map((endpoint) => ({
       concurrency: 10,
       totalRequests: 100,
       timeout: 30000,
       pattern: "sustained" as const,
       ...baseConfig,
-      url: `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`,
+      url: `${baseUrl.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`,
     }));
   },
 };

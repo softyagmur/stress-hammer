@@ -158,7 +158,7 @@ stress-hammer generate-config -o my-config.json
   "pattern": "sustained",
   "timeout": 30000,
   "headers": {
-    "User-Agent": "StressHammer/1.0.0",
+    "User-Agent": "StressHammer/1.1.0",
     "Accept": "application/json"
   },
   "rampUp": {
@@ -469,7 +469,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📈 Changelog
 
-### v1.0.0
+### v1.1.0
 - Initial release
 - Multiple attack patterns support
 - CLI interface
